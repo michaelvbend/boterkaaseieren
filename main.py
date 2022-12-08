@@ -22,8 +22,8 @@ class Game(tk.Tk):
         self.board_footer()
 
         self.active_players = [self.Player("X"), self.Player("O")]
-        self.players = (self.active_players[(attempts + 1) % len(self.active_players)]
-                        for attempts in range(1, MAX_ATTEMPTS + 2))
+        self.player_turn_gen = (self.active_players[(attempts + 1) % len(self.active_players)]
+                                for attempts in range(1, MAX_ATTEMPTS + 2))
         self.used_fields = []
         self.game_over = False
 
@@ -149,8 +149,8 @@ class Game(tk.Tk):
         self.footer_text['text'] = f"Speler {self.active.player_symbol} is aan zet"
 
     def switch_player(self) -> Player:
-        """Return volgende item in generator"""
-        return next(self.players)
+        """Return volgende player in generator"""
+        return next(self.player_turn_gen)
 
     @staticmethod
     def is_winner(player: Player) -> bool:
@@ -177,8 +177,8 @@ class Game(tk.Tk):
     def reset_game(self) -> None:
         """Reset alle attributen voor opnieuw beginnen van spel"""
         self.active_players = [self.Player("X"), self.Player("O")]
-        self.players = (self.active_players[(attempts + 1) % len(self.active_players)]
-                        for attempts in range(1, MAX_ATTEMPTS + 2))
+        self.player_turn_gen = (self.active_players[(attempts + 1) % len(self.active_players)]
+                                for attempts in range(1, MAX_ATTEMPTS + 2))
         self.used_fields = []
         self.game_over = False
         self.footer_text['text'] = START_TEXT
