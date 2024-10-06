@@ -48,7 +48,6 @@ class Game(tk.Tk):
             return f"Player {self.player_symbol}"
 
         def update_score(self, row_n: int, col_n: int) -> None:
-            """Update score voor elke mogelijke combinatie"""
             self.score[f"row{row_n}"] += 1
             self.score[f"col{col_n}"] += 1
 
@@ -60,7 +59,6 @@ class Game(tk.Tk):
 
 
     def board_header(self):
-        """Plaatst header text bovenaan in de window"""
         grid_frame = tk.Frame(master=self, background=BACKGROUND_COLOR)
         grid_frame.pack()
         self.header_button = tk.Button(master=grid_frame,
@@ -71,7 +69,6 @@ class Game(tk.Tk):
         self.header_button.grid(column=1,row=0, padx=5, pady=5)
 
     def board_grid(self):
-        """Plaatst een 3x3 grid in een apart frame"""
         grid_frame = tk.Frame(master=self)
         grid_frame.pack()
         for row in range(3):
@@ -108,7 +105,6 @@ class Game(tk.Tk):
         self.footer_text.pack()
 
     def process_movement(self, event: tk.Event) -> None:
-        """Verwerk zet van speler X en check of speler X heeft gewonnen of gelijkspel"""
         if not self.game_over:
             field = event.widget
             move = str(field).split(".")[-1]
@@ -129,45 +125,36 @@ class Game(tk.Tk):
                 self.end_game(message="Gelijkspel!")
 
     def is_valid_move(self, move: str) -> bool:
-        """Controleer of gekozen veld al eerder is gekozen"""
         return move not in self.used_fields
 
     def draw_symbol(self, player_sym: str, field: tk.Button) -> None:
-        """Plaats symbool van speler op gekozen veld"""
         field['text'] = player_sym
 
     def move_player(self, player: Player, movement: str, field: tk.Button) -> None:
-        """Plaats speler symbool op gekozen veld"""
         used_field = movement
         self.draw_symbol(player.player_symbol, field)
         self.used_fields.append(used_field)
 
         player.update_score(row_n=field.row, col_n=field.col)
 
-        # Update actieve speler
         self.active = self.switch_player()
         self.footer_text['text'] = f"Speler {self.active.player_symbol} is aan zet"
 
     def switch_player(self) -> Player:
-        """Return volgende player in generator"""
         return next(self.player_turn_gen)
 
     @staticmethod
     def is_winner(player: Player) -> bool:
-        """Return true als een van de drie score categorien gelijk aan drie is"""
         for item in player.score.values():
             if item == 3:
                 return True
 
     def is_tie(self) -> bool:
-        """Return true als alle velden gebruikt zijn"""
         return len(self.used_fields) == MAX_ATTEMPTS
 
     def end_game(self, message: str) -> None:
-        """Disable buttons, toon message en stop het spel"""
         self.footer_text['text'] = message
 
-        # Disable alle velden
         for w in self.winfo_children():
             for item in w.winfo_children():
                 if str(w) == ".!frame2":
@@ -175,7 +162,6 @@ class Game(tk.Tk):
         self.game_over = True
 
     def reset_game(self) -> None:
-        """Reset alle attributen voor opnieuw beginnen van spel"""
         self.active_players = [self.Player("X"), self.Player("O")]
         self.player_turn_gen = (self.active_players[(attempts + 1) % len(self.active_players)]
                                 for attempts in range(1, MAX_ATTEMPTS + 2))
@@ -183,13 +169,11 @@ class Game(tk.Tk):
         self.game_over = False
         self.footer_text['text'] = START_TEXT
 
-        # Enable alle velden
         for w in self.winfo_children():
             for item in w.winfo_children():
                 if str(w) == ".!frame2":
                     item.config(text="")
                     item['state'] = 'normal'
-
 
 def main():
     game = Game()
